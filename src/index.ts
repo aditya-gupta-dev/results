@@ -1,7 +1,19 @@
-import { Elysia } from "elysia";
+import { Elysia } from "elysia"
+import { loadTemplates } from "./template";
+import { tryCatch } from "./utils";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const app = new Elysia(); 
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+app.get("/", async () => {
+  // bug fix: the templates get load later in the callback...
+  const { data, err } = await tryCatch(loadTemplates("templates/")); 
+  if(err) { 
+    return "failed "+err; 
+  } else { 
+    return data; 
+  }
+})
+
+app.listen(3000, (server) => { 
+  console.log(`Running on port: ${server.port}`);  
+})
