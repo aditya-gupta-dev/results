@@ -1,26 +1,16 @@
-import { readdir } from "fs/promises"; 
 import { tryCatch } from "./utils";
 
+const templateDir: string = "templates"; 
 
-export type HtmlTemplate = {
-  name: string, 
-  html: string 
-} 
+export async function getTemplate(name: string): Promise<string | null> { 
+  const file = Bun.file(`${templateDir}/${name}.html`); 
 
-export async function loadTemplates(templateDir: string): Promise<Array<HtmlTemplate>> { 
-    const { data, err } = await tryCatch(readdir(templateDir)); 
-    if(err) {
-        throw err; 
-    }
-    
-    const templates: Array<HtmlTemplate> = []; 
-    data.filter((d) => d.endsWith(".html")).forEach((filename) => {
-        Bun.file(`${templateDir}/${filename}`).text().then((res) => { 
-            templates.push({ 
-                html: res, 
-                name: filename.split(".")[0]
-            })            
-        })
-    })    
-    return templates; 
+  const { data, err } = await tryCatch(file.text()); 
+  if (err) { 
+    console.error("template error: ", err, "name: ", name);
+    return null; 
+  } 
+
+  return data; 
 }
+

@@ -1,17 +1,17 @@
 import { Elysia } from "elysia"
-import { loadTemplates } from "./template";
+import { getTemplate } from "./template";
 import { tryCatch } from "./utils";
 
 const app = new Elysia(); 
 
-app.get("/", async () => {
-  // bug fix: the templates get load later in the callback...
-  const { data, err } = await tryCatch(loadTemplates("templates/")); 
-  if(err) { 
-    return "failed "+err; 
-  } else { 
-    return data; 
-  }
+const indexTemplate = getTemplate("index"); 
+
+app.post("/", () => {
+  return "Posted"
+})
+
+app.get("/", async (_) => {
+  return "hello"
 })
 
 app.listen(3000, (server) => { 
