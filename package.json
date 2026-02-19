@@ -2,6 +2,8 @@
   "name": "results",
   "version": "1.0.50",
   "scripts": {
+    "frontend:dev": "cd frontend && bun run dev",
+    "frontend:build": "cd frontend && bun run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts"
   },
