@@ -1,22 +1,12 @@
 <script lang="ts">
+  let counter = 0;
+  import { Route, Router } from "svelte-routing";
+    import Results from "./Results.svelte";
+    import Home from "./Home.svelte";
 </script>
 
-<main>
-  <form action="/assets" method="post">
-    <input type="number" name="regid" id="regid"/>
-    <input type="password" name="pass" id="pass" />
-    <button type="submit">
-      Login
-    </button>
-  </form>
-</main>
+<Router>
+  <Route path="/"><Home/></Route>
+  <Route path="/results" component={Results}/>
+</Router>
 
-<style>
-  main {
-    display: flex;
-    min-width: 100vw;
-    min-height: 100vh;
-    flex-direction: column;
-    background-color: bisque;
-  }
-</style>

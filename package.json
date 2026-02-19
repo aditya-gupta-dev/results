@@ -3,7 +3,7 @@
   "version": "1.0.50",
   "scripts": {
     "frontend:dev": "cd frontend && bun run dev",
-    "frontend:build": "cd frontend && bun run build",
+    "frontend:build": "rm -rf dist && cd frontend && bun run build && mv dist/ ../dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts"
   },
