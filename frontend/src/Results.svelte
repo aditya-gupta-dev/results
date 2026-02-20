@@ -1,25 +1,16 @@
 <script lang="ts">
-    import { beforeUpdate } from "svelte";
+    import axios from "axios";
+    import { onMount } from "svelte";
 
     let s = ""
 
-    beforeUpdate(async () => { 
-        const res = await fetch("/get-results", { 
-            method: "POST", 
-            headers: { 
-                "Content-Type": "applicaton/json"
-            },
-            body: JSON.stringify({
-                "regid": 12321, 
-                "pass": "aspk"
-            })
+    onMount(async () => { 
+        const res = await axios.post("/get-results", { 
+            regid: "123132", 
+            pass: "something" 
         }); 
         
-        if (res.ok) { 
-            s = await res.text(); 
-        } else { 
-            s = "failed"; 
-        }
+        s = `${res.status} ${res.data}`
     })
 </script>
 

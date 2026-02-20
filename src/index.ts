@@ -22,10 +22,15 @@ app.onError(({ code, error, set }) => {
   }
 })
 
-app.post("get-results", async ({ body }) => {  
+app.post("/get-results", async ({ body }) => {  
   const { regid, pass } = body;
 
-  return Bun.hash(regid.toString(), Number.parseInt(pass)); 
+  const hash = await Bun.password.hash(`${regid}:${pass}`, {
+    algorithm: "bcrypt", 
+    cost: 5
+  });
+   
+  return hash; 
 }, { 
   body: resultsBodyRequest
 })
