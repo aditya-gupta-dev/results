@@ -1,0 +1,16 @@
+
+{
+  "name": "John doe", 
+  "subjects": [
+    { 
+      "subject_code": "MTH_166", 
+      "marks": 69,
+      "maxMarks": 100
+    }, 
+    {
+      "subject_code": "PEL_121", 
+      "marks": 89, 
+      "maxMarks": 100 
+    }
+  ]
+} 

@@ -1,9 +1,11 @@
 import { Elysia, t } from "elysia"
 import { staticPlugin } from "@elysiajs/static";
 import { getAllowedAssetsEndpoints } from "./fs";
-import { resultsBodyRequest } from "./models";
+import { getResultTry } from "./result";
+import { tryCatch } from "./utils";
+// import { resultsBodyRequest } from "./models";
 
-const allowedAssets = await getAllowedAssetsEndpoints("dist"); 
+const allowedAssets = await getAllowedAssetsEndpoints("dist");
 
 const app = new Elysia().use(
   staticPlugin({
@@ -13,42 +15,50 @@ const app = new Elysia().use(
 );
 
 app.onError(({ code, error, set }) => {
-  console.log(error);   
-  if (code === 'VALIDATION') { 
+  console.log(error);
+  if (code === 'VALIDATION') {
     set.status = 422;
-    return { 
-      err: "invalid data recieved" 
+    return {
+      err: "invalid data recieved"
     }
   }
 })
 
-app.post("/get-results", async ({ body }) => {  
-  const { regid, pass } = body;
+app.get("/get-results", async ({ set, headers }) => {
+  const regid = headers['regid'];
+  const pass = headers['pass'];
 
-  const hash = await Bun.password.hash(`${regid}:${pass}`, {
-    algorithm: "bcrypt", 
-    cost: 5
-  });
-   
-  return hash; 
-}, { 
-  body: resultsBodyRequest
+  if (!regid || !pass) {
+    set.status = 422;
+    return "Invalid request body";
+  }
+
+  const hash = Bun.MD5.hash(`${regid}:${pass}`, "hex");
+
+  const { data, err } = await tryCatch(getResultTry(hash))
+  
+  if (err) { 
+    set.status = 501; 
+    return err.message
+  }
+
+  return data; 
 })
 
-app.get("assets/:filename", async ({ set, params }) => {  
-  if(!allowedAssets.get(params.filename)) { 
-    set.status = 401; 
-    return "Unauthorized"; 
+app.get("assets/:filename", async ({ set, params }) => {
+  if (!allowedAssets.get(params.filename)) {
+    set.status = 401;
+    return "Unauthorized";
   }
-  set.headers["cache-control"] = "max-age=43200"; 
-  set.headers["x-content-type-options"] = "script";  
-  
-  return Bun.file(allowedAssets.get(params.filename)!); 
-}); 
+  set.headers["cache-control"] = "max-age=43200";
+  set.headers["x-content-type-options"] = "script";
+
+  return Bun.file(allowedAssets.get(params.filename)!);
+});
 
 app.get("/", async (_) => {
-  return Bun.file("./dist/index.html"); 
-}); 
+  return Bun.file("./dist/index.html");
+});
 
 app.listen(3000, (server) => {
   console.log(`Running on ${server.hostname}:${server.port}`);

@@ -18,3 +18,18 @@ export async function tryCatch<T, E = Error>(promise: Promise<T>): Promise<Resul
         return { data: null, err: err as E }
     }
 }
+
+type DigestEncoding = "utf8" | "ucs2" | "utf16le" | "latin1" | "ascii" | "base64" | "base64url" | "hex";
+
+type HashInto = { 
+    format: string, 
+    encoding: DigestEncoding 
+}
+
+export function hashInto(regid: string, pass: string) { 
+    let defaultFormat: HashInto = { 
+        format: `{}:{}`, 
+        encoding: "hex"
+    }; 
+
+}
