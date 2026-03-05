@@ -3,7 +3,6 @@ import { staticPlugin } from "@elysiajs/static";
 import { getAllowedAssetsEndpoints } from "./fs";
 import { getResultTry } from "./result";
 import { tryCatch } from "./utils";
-// import { resultsBodyRequest } from "./models";
 
 const allowedAssets = await getAllowedAssetsEndpoints("dist");
 
