@@ -1,15 +1,8 @@
-# Elysia with Bun runtime
+# Throughput Journey
 
-## Getting Started
-To get started with this template, simply paste this command into your terminal:
-```bash
-bun create elysia ./elysia-example
-```
+### 1) Reading from disk everytime (36k req/sec)
 
-## Development
-To start the development server run:
-```bash
-bun run dev
-```
+#### Commit -> 3757965b997af055cd6dc453415cbbe7023944f7
 
-Open http://localhost:3000/ with your browser to see the result.
+
+### 2) With Caching data (45k req/sec)

@@ -14,5 +14,6 @@ export async function getResultTry(hash: string): Promise<StudentResult | null> 
     throw err; 
   }
 
+  Cache.getCache<StudentResult>().setValue(hash, data!); 
   return data; 
 }
