@@ -1,8 +1,10 @@
 import { Elysia, t } from "elysia"
 import { staticPlugin } from "@elysiajs/static";
-import { getAllowedAssetsEndpoints } from "./fs";
+import { getAllowedAssetsEndpoints, readStudentResultTry } from "./fs";
 import { getResultTry } from "./result";
 import { tryCatch } from "./utils";
+import { resultsBodyRequest, StudentResult } from "./models";
+import { Cache } from "./cache";
 
 const allowedAssets = await getAllowedAssetsEndpoints("dist");
 
@@ -23,9 +25,10 @@ app.onError(({ code, error, set }) => {
   }
 })
 
-app.get("/get-results", async ({ set, headers }) => {
-  const regid = headers['regid'];
-  const pass = headers['pass'];
+app.post("/get-results", async ({ set, body }) => {
+
+  const regid = body.regid
+  const pass = body.pass
 
   if (!regid || !pass) {
     set.status = 422;
@@ -35,13 +38,45 @@ app.get("/get-results", async ({ set, headers }) => {
   const hash = Bun.MD5.hash(`${regid}:${pass}`, "hex");
 
   const { data, err } = await tryCatch(getResultTry(hash))
-  
-  if (err) { 
-    set.status = 501; 
+
+  if (err) {
+    set.status = 501;
     return err.message
   }
 
-  return data; 
+  return data;
+}, {
+  body: resultsBodyRequest
+})
+
+app.get('/auth', async ({ set, headers }) => {
+  const regid = headers["regid"];
+  const pass = headers["pass"];  
+
+  if (!regid || !pass) {
+    set.status = 401;
+    return "Unauthorized";
+  }
+
+  const hash = Bun.MD5.hash(`${regid}:${pass}`, "hex"); 
+  const file = Bun.file(`db/${hash}`); 
+
+  if ((await file.exists())) { 
+    tryCatch(readStudentResultTry(hash))
+      .then(({ data, err }) => {         
+        if (!err) { 
+          Cache.getCache<StudentResult>().setValue(hash, data); 
+        } else { 
+          console.error(err);
+        }
+      }); 
+    set.status = 200; 
+    return "Authorized";
+  } else {     
+    set.status = 401; 
+    return "Unauthorized";  
+  }
+  
 })
 
 app.get("assets/:filename", async ({ set, params }) => {

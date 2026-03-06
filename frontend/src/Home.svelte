@@ -1,25 +1,16 @@
 <script lang="ts">
-    import { Link } from "svelte-routing";
+  import { Link } from "svelte-routing";
+  import Login from "./Login.svelte";
+    import { isLoggedIn } from "./store";
 
-  let isLoggedIn = false;
 </script>
 
-{#if isLoggedIn}
-  <main>
-      <input type="number" name="regid" id="regid" />
-      <input type="password" name="pass" id="pass" />
-      <button on:click={() => isLoggedIn = true}>View Results</button>
-  </main>
-{:else}
+{#if $isLoggedIn}
   <Link to="/results">Results</Link>
+{:else}
+  <Login />
 {/if}
 
 <style>
-  main {
-    display: flex;
-    min-width: 100vw;
-    min-height: 100vh;
-    flex-direction: column;
-    background-color: bisque;
-  }
+
 </style>
